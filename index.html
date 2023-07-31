@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Product List</title>
+</head>
+<body>
+  <h1>Product List</h1>
+  <input type="text" id="searchInput" placeholder="Search products...">
+  <ul id="productList"></ul>
+
+  <script>
+    const productList = document.getElementById('productList');
+    const searchInput = document.getElementById('searchInput');
+
+    fetch('http://localhost:3000/api/product')
+      .then(response => response.json())
+      .then(products => {
+        displayProducts(products);
+
+        searchInput.addEventListener('keyup', () => {
+          const searchTerm = searchInput.value.toLowerCase();
+          const filteredProducts = products.filter(product =>
+            product.name.toLowerCase().includes(searchTerm) ||
+            product.description.toLowerCase().includes(searchTerm)
+          );
+          displayProducts(filteredProducts);
+        });
+      })
+      .catch(error => console.error('Error fetching products:', error));
+
+    function displayProducts(products) {
+      productList.innerHTML = '';
+      products.forEach(product => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <strong>${product.name}</strong><br>
+          <em>${product.description}</em><br>
+          Price: $${product.price}
+        `;
+        productList.appendChild(li);
+      });
+    }
+  </script>
+</body>
+</html>
